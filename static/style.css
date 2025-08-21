@@ -1,0 +1,295 @@
+/* Custom styles for Car Recommendation Chat */
+
+body, html {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.container-fluid {
+    height: 100vh;
+    padding: 0;
+}
+
+/* Chat Messages */
+.message {
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.user-message .message-content {
+    flex-direction: row-reverse;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.message-text {
+    background: white;
+    padding: 12px 16px;
+    border-radius: 18px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+.user-message .message-text {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.bot-message .message-text {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* Car Recommendations */
+.recommendations {
+    margin-top: 1rem;
+}
+
+.car-recommendation {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.car-recommendation:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.car-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.car-title {
+    margin: 0;
+    color: #495057;
+    font-weight: 600;
+}
+
+.price-range {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #28a745;
+    margin-bottom: 8px;
+}
+
+.car-description {
+    color: #6c757d;
+    margin-bottom: 12px;
+    font-style: italic;
+}
+
+.car-specs {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.spec {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.spec i {
+    color: #007bff;
+}
+
+.match-reasons {
+    padding: 8px 12px;
+    background: #e7f3ff;
+    border-radius: 6px;
+    border-left: 3px solid #007bff;
+}
+
+.match-reasons small {
+    color: #0056b3;
+}
+
+/* Input Area */
+.input-group {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+.input-group .form-control {
+    border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+}
+
+.input-group .form-control:focus {
+    box-shadow: none;
+    border: none;
+}
+
+.input-group .btn {
+    border: none;
+    padding: 12px 20px;
+    border-radius: 0;
+}
+
+/* Quick Suggestions */
+.quick-suggestions {
+    margin-top: 8px;
+}
+
+.suggestion-btn {
+    margin-bottom: 4px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.suggestion-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Chat Container */
+#chat-container {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background-attachment: fixed;
+}
+
+/* Scrollbar Styling */
+#chat-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chat-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+#chat-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+#chat-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Navbar Styling */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Loading States */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .message-text {
+        max-width: 85%;
+    }
+    
+    .car-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .car-specs {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .quick-suggestions {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+    
+    .message-text {
+        max-width: 90%;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+    }
+    
+    .car-recommendation {
+        padding: 12px;
+    }
+}
+
+/* Utility Classes */
+.text-gradient {
+    background: linear-gradient(45deg, #007bff, #28a745);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Focus states for accessibility */
+.form-control:focus,
+.btn:focus,
+.suggestion-btn:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .message-text {
+        border-width: 2px;
+    }
+    
+    .car-recommendation {
+        border-width: 2px;
+    }
+}

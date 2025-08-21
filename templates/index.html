@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Recommendation Chat Assistant</title>
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    <style>
+        /* Fallback styles when CDN is blocked */
+        .container-fluid { max-width: 100%; padding: 0 15px; }
+        .row { display: flex; flex-wrap: wrap; }
+        .col, .col-12 { flex: 1; width: 100%; }
+        .btn { padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .form-control { width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; }
+        .input-group { display: flex; }
+        .input-group .form-control { border-radius: 4px 0 0 4px; }
+        .input-group .btn { border-radius: 0 4px 4px 0; }
+        .navbar { background: #007bff; color: white; padding: 10px 15px; }
+        .badge { background: #28a745; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-3 { margin-top: 1rem; }
+        .mb-0 { margin-bottom: 0; }
+        .me-1 { margin-right: 0.25rem; }
+        .me-2 { margin-right: 0.5rem; }
+        .p-3 { padding: 1rem; }
+        .text-center { text-align: center; }
+        .d-flex { display: flex; }
+        .align-items-center { align-items: center; }
+        .justify-content-between { justify-content: space-between; }
+        .overflow-auto { overflow: auto; }
+        .border-top { border-top: 1px solid #dee2e6; }
+        .bg-light { background-color: #f8f9fa; }
+        .text-muted { color: #6c757d; }
+        .small { font-size: 0.875em; }
+        .fas::before { content: ""; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 1000; }
+        .modal.show { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; }
+        .spinner-border { width: 2rem; height: 2rem; border: 0.25em solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 0.75s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container-fluid" style="height: 100vh;">
+        <div class="row" style="height: 100%;">
+            <!-- Header -->
+            <div class="col-12" style="height: auto;">
+                <nav class="navbar">
+                    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                        <span style="font-size: 1.25rem; font-weight: bold;">
+                            🚗 Car Recommendation Assistant
+                        </span>
+                        <span>
+                            Tell me what you're looking for in a car!
+                        </span>
+                    </div>
+                </nav>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-12" style="height: calc(100vh - 80px); display: flex; flex-direction: column;">
+                <!-- Chat Messages -->
+                <div id="chat-container" style="flex-grow: 1; overflow-y: auto; padding: 1rem;">
+                    <div id="messages">
+                        <!-- Welcome Message -->
+                        <div class="message bot-message">
+                            <div class="message-content">
+                                <div class="avatar bg-primary">
+                                    🤖
+                                </div>
+                                <div class="message-text">
+                                    <strong>Hello! I'm your personal car recommendation assistant! 🚗</strong>
+                                    <br><br>
+                                    I'm here to help you find the perfect car based on your needs, budget, and preferences. 
+                                    Just tell me things like:
+                                    <ul class="mt-2 mb-0">
+                                        <li>Your budget range</li>
+                                        <li>What you'll use the car for (family, commuting, fun, etc.)</li>
+                                        <li>Any specific features you want</li>
+                                        <li>The type of driving experience you're looking for</li>
+                                    </ul>
+                                    <br>
+                                    <em>Example: "I need a reliable family car under $40,000 for daily commuting and weekend trips with kids"</em>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Input Area -->
+                <div class="border-top bg-light p-3">
+                    <div class="row">
+                        <div class="col">
+                            <div class="input-group">
+                                <input type="text" id="message-input" class="form-control" 
+                                       placeholder="Describe what kind of car you're looking for..." 
+                                       autocomplete="off">
+                                <button id="send-button" class="btn" type="button">
+                                    Send
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col">
+                            <div class="quick-suggestions">
+                                <span class="text-muted small me-2">Quick suggestions:</span>
+                                <button class="btn" style="font-size: 0.8rem; margin: 2px;" onclick="setMessage('Family car under $35,000')">Family car under $35,000</button>
+                                <button class="btn" style="font-size: 0.8rem; margin: 2px;" onclick="setMessage('Luxury sedan for executives')">Luxury sedan for executives</button>
+                                <button class="btn" style="font-size: 0.8rem; margin: 2px;" onclick="setMessage('Electric car for city driving')">Electric car for city driving</button>
+                                <button class="btn" style="font-size: 0.8rem; margin: 2px;" onclick="setMessage('Sports car for weekends')">Sports car for weekends</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="modal">
+        <div class="modal-content text-center">
+            <div class="spinner-border mb-3" role="status">
+                <span style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">Loading...</span>
+            </div>
+            <p class="mb-0">Finding perfect cars for you...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        const messagesContainer = document.getElementById('messages');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const loadingModal = document.getElementById('loadingModal');
+
+        function setMessage(text) {
+            messageInput.value = text;
+            messageInput.focus();
+        }
+
+        function showModal() {
+            loadingModal.classList.add('show');
+        }
+
+        function hideModal() {
+            loadingModal.classList.remove('show');
+        }
+
+        // Send message function
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            messageInput.value = '';
+            sendButton.disabled = true;
+
+            // Show loading
+            showModal();
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Add bot response
+                    addBotResponse(data);
+                } else {
+                    addMessage(data.message || 'Sorry, I encountered an error. Please try again.', 'bot');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Sorry, I\'m having trouble connecting. Please check your internet connection and try again.', 'bot');
+            } finally {
+                hideModal();
+                sendButton.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        // Add message to chat
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            const avatar = sender === 'user' ? 
+                '<div class="avatar" style="background: #6c757d;">👤</div>' :
+                '<div class="avatar" style="background: #007bff;">🤖</div>';
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    ${avatar}
+                    <div class="message-text">${text}</div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Add bot response with recommendations
+        function addBotResponse(data) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot-message';
+            
+            let recommendationsHTML = '';
+            if (data.recommendations && data.recommendations.length > 0) {
+                recommendationsHTML = '<div class="recommendations mt-3">';
+                
+                data.recommendations.forEach((car, index) => {
+                    const priceRange = `$${car.price_range.min.toLocaleString()} - $${car.price_range.max.toLocaleString()}`;
+                    const features = car.features.slice(0, 3).join(', ');
+                    const mpgDisplay = car.mpg ? `${car.mpg.city}/${car.mpg.highway} mpg` : 'N/A';
+                    
+                    recommendationsHTML += `
+                        <div class="car-recommendation">
+                            <div class="car-header">
+                                <h6 class="car-title">${car.brand} ${car.model} (${car.year})</h6>
+                                <span class="badge">Score: ${car.score}/100</span>
+                            </div>
+                            <div class="car-details">
+                                <div class="price-range">${priceRange}</div>
+                                <div class="car-description">${car.description}</div>
+                                <div class="car-specs">
+                                    <span class="spec">⛽ ${mpgDisplay}</span>
+                                    <span class="spec">⚙️ ${features}</span>
+                                </div>
+                                ${car.match_reasons && car.match_reasons.length > 0 ? 
+                                    `<div class="match-reasons">
+                                        <small><strong>Why this matches:</strong> ${car.match_reasons.join(', ')}</small>
+                                    </div>` : ''
+                                }
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                recommendationsHTML += '</div>';
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="avatar" style="background: #007bff;">🤖</div>
+                    <div class="message-text">
+                        ${data.message}
+                        ${recommendationsHTML}
+                    </div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Scroll to bottom
+        function scrollToBottom() {
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Event listeners
+        sendButton.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Focus on input when page loads
+        window.addEventListener('load', function() {
+            messageInput.focus();
+        });
+    </script>
+</body>
+</html>
