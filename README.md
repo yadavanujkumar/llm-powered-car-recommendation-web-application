@@ -1,3 +1,6 @@
+Prompt to genrate this project:
+"you are a car enthusiast , you have all the knowledge of the car. now you have to understand the emotion of the buyer like budget,etc and recmomned the car accordingly"
+
 # 🚗 LLM-Powered Car Recommendation Chat Assistant
 
 An intelligent car recommendation system that uses Large Language Models (LLM) to understand user needs, emotions, and budget to recommend the perfect car. The system analyzes user input in natural language and provides personalized car recommendations based on comprehensive criteria.
