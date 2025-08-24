@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 from llm_service import LLMService
 from recommendation_engine import RecommendationEngine
 from car_database import CarDatabase
+from external_car_service import ExternalCarDataService
+from car_image_service import CarImageService
 
 # Load environment variables
 load_dotenv()
@@ -13,8 +15,10 @@ app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-here')
 
 # Initialize services
 llm_service = LLMService()
-recommendation_engine = RecommendationEngine()
 car_database = CarDatabase()
+external_car_service = ExternalCarDataService()
+car_image_service = CarImageService()
+recommendation_engine = RecommendationEngine(external_car_service)
 
 @app.route('/')
 def index():
@@ -56,7 +60,16 @@ def chat():
                     'mpg': car['mpg'],
                     'category': car['category'],
                     'score': round(car['recommendation_score'], 1),
-                    'match_reasons': car['match_reasons']
+                    'match_reasons': car['match_reasons'],
+                    'images': car.get('images', {}),
+                    'reviews': car.get('reviews', {}),
+                    'safety_rating': car.get('safety_rating', {}),
+                    'reliability_score': car.get('reliability_score', {}),
+                    'fuel_costs': car.get('fuel_costs', {}),
+                    'financing': car.get('financing', {}),
+                    'availability': car.get('availability', {}),
+                    'awards': car.get('awards', []),
+                    'tech_features': car.get('tech_features', [])
                 }
                 for car in recommended_cars[:5]  # Top 5 recommendations
             ],
@@ -76,7 +89,7 @@ def chat():
 def get_all_cars():
     """Get all cars in database for browsing"""
     try:
-        cars = car_database.get_all_cars()
+        cars = external_car_service.get_all_cars()
         return jsonify({
             'cars': [
                 {
@@ -86,7 +99,10 @@ def get_all_cars():
                     'price_range': car['price_range'],
                     'category': car['category'],
                     'fuel_type': car['fuel_type'],
-                    'description': car['description']
+                    'description': car['description'],
+                    'images': car.get('images', {}),
+                    'reviews': car.get('reviews', {}),
+                    'safety_rating': car.get('safety_rating', {})
                 }
                 for car in cars
             ]
@@ -99,7 +115,7 @@ def get_all_cars():
 def get_car_details(brand, model):
     """Get detailed information about a specific car"""
     try:
-        car = car_database.get_car_by_id(brand, model)
+        car = external_car_service.get_car_by_id(brand, model)
         if car:
             return jsonify(car)
         else:
