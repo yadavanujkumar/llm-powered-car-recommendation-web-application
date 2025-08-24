@@ -8,9 +8,10 @@ class LLMService:
     def __init__(self):
         api_key = os.getenv('OPENAI_API_KEY')
         if api_key:
-            self.client = openai.OpenAI(api_key=api_key)
+            openai.api_key = api_key
+            self.api_key_set = True
         else:
-            self.client = None
+            self.api_key_set = False
             print("Warning: No OpenAI API key found. LLM features will use fallback analysis.")
     
     def analyze_user_input(self, user_message: str) -> Dict[str, Any]:
@@ -39,11 +40,11 @@ class LLMService:
         user_prompt = f"Analyze this car buying request: '{user_message}'"
         
         try:
-            if not self.client:
+            if not self.api_key_set:
                 # Use fallback if no API key available
                 return self._fallback_analysis(user_message)
             
-            response = self.client.chat.completions.create(
+            response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": system_prompt},
