@@ -47,27 +47,21 @@
         <div class="row" style="height: 100%;">
             <!-- Header -->
             <div class="col-12" style="height: auto;">
-                <nav class="navbar">
-                    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                        <span style="font-size: 1.25rem; font-weight: bold;">
-                            🚗 Car Recommendation Assistant
-                        </span>
-                        <span>
-                            Tell me what you're looking for in a car!
-                        </span>
-                    </div>
-                </nav>
+                <div class="header">
+                    <h1>🚗 Car Recommendation Assistant</h1>
+                    <p>Powered by AI - Find your perfect car with personalized recommendations</p>
+                </div>
             </div>
             
             <!-- Main Content -->
-            <div class="col-12" style="height: calc(100vh - 80px); display: flex; flex-direction: column;">
+            <div class="col-12" style="height: calc(100vh - 120px); display: flex; flex-direction: column;">
                 <!-- Chat Messages -->
                 <div id="chat-container" style="flex-grow: 1; overflow-y: auto; padding: 1rem;">
                     <div id="messages">
                         <!-- Welcome Message -->
                         <div class="message bot-message">
                             <div class="message-content">
-                                <div class="avatar bg-primary">
+                                <div class="avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                                     🤖
                                 </div>
                                 <div class="message-text">
@@ -90,29 +84,21 @@
                 </div>
                 
                 <!-- Input Area -->
-                <div class="border-top bg-light p-3">
-                    <div class="row">
-                        <div class="col">
-                            <div class="input-group">
-                                <input type="text" id="message-input" class="form-control" 
-                                       placeholder="Describe what kind of car you're looking for..." 
-                                       autocomplete="off">
-                                <button id="send-button" class="btn" type="button">
-                                    Send
-                                </button>
-                            </div>
-                        </div>
+                <div class="input-area">
+                    <div class="input-group">
+                        <input type="text" id="message-input" class="form-control" 
+                               placeholder="Describe what kind of car you're looking for..." 
+                               autocomplete="off">
+                        <button id="send-button" class="btn" type="button">
+                            Send
+                        </button>
                     </div>
-                    <div class="row mt-2">
-                        <div class="col">
-                            <div class="quick-suggestions">
-                                <span class="text-muted small me-2">Quick suggestions:</span>
-                                <button class="btn" style="font-size: 0.8rem; margin: 2px;" onclick="setMessage('Family car under $35,000')">Family car under $35,000</button>
-                                <button class="btn" style="font-size: 0.8rem; margin: 2px;" onclick="setMessage('Luxury sedan for executives')">Luxury sedan for executives</button>
-                                <button class="btn" style="font-size: 0.8rem; margin: 2px;" onclick="setMessage('Electric car for city driving')">Electric car for city driving</button>
-                                <button class="btn" style="font-size: 0.8rem; margin: 2px;" onclick="setMessage('Sports car for weekends')">Sports car for weekends</button>
-                            </div>
-                        </div>
+                    <div class="quick-suggestions">
+                        <span style="color: #6c757d; font-size: 0.9rem; margin-right: 12px;">Quick suggestions:</span>
+                        <button class="suggestion-btn" onclick="setMessage('Family car under $35,000')">Family car under $35,000</button>
+                        <button class="suggestion-btn" onclick="setMessage('Luxury sedan for executives')">Luxury sedan for executives</button>
+                        <button class="suggestion-btn" onclick="setMessage('Electric car for city driving')">Electric car for city driving</button>
+                        <button class="suggestion-btn" onclick="setMessage('Sports car for weekends')">Sports car for weekends</button>
                     </div>
                 </div>
             </div>
@@ -195,8 +181,8 @@
             messageDiv.className = `message ${sender}-message`;
             
             const avatar = sender === 'user' ? 
-                '<div class="avatar" style="background: #6c757d;">👤</div>' :
-                '<div class="avatar" style="background: #007bff;">🤖</div>';
+                '<div class="avatar" style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%);">👤</div>' :
+                '<div class="avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🤖</div>';
             
             messageDiv.innerHTML = `
                 <div class="message-content">
@@ -216,26 +202,107 @@
             
             let recommendationsHTML = '';
             if (data.recommendations && data.recommendations.length > 0) {
-                recommendationsHTML = '<div class="recommendations mt-3">';
+                recommendationsHTML = '<div class="recommendations">';
                 
                 data.recommendations.forEach((car, index) => {
                     const priceRange = `$${car.price_range.min.toLocaleString()} - $${car.price_range.max.toLocaleString()}`;
                     const features = car.features.slice(0, 3).join(', ');
                     const mpgDisplay = car.mpg ? `${car.mpg.city}/${car.mpg.highway} mpg` : 'N/A';
                     
+                    // Get car image
+                    const imageUrl = car.images?.primary || 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&q=80';
+                    
+                    // Build additional info sections
+                    let additionalInfo = '';
+                    
+                    // Reviews and ratings
+                    if (car.reviews) {
+                        additionalInfo += `
+                            <div class="car-info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">Rating</div>
+                                    <div class="info-value">⭐ ${car.reviews.average_rating || 'N/A'}/5</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Reviews</div>
+                                    <div class="info-value">${car.reviews.total_reviews || 'N/A'}</div>
+                                </div>`;
+                        
+                        if (car.safety_rating && car.safety_rating.nhtsa_overall) {
+                            additionalInfo += `
+                                <div class="info-item">
+                                    <div class="info-label">Safety</div>
+                                    <div class="info-value">🛡️ ${car.safety_rating.nhtsa_overall}/5</div>
+                                </div>`;
+                        }
+                        
+                        if (car.fuel_costs && car.fuel_costs.annual_cost) {
+                            additionalInfo += `
+                                <div class="info-item">
+                                    <div class="info-label">Annual Fuel</div>
+                                    <div class="info-value">⛽ ${car.fuel_costs.annual_cost}</div>
+                                </div>`;
+                        }
+                        
+                        additionalInfo += '</div>';
+                    }
+                    
+                    // Awards section
+                    let awardsSection = '';
+                    if (car.awards && car.awards.length > 0) {
+                        awardsSection = '<div class="awards-section">';
+                        car.awards.forEach(award => {
+                            awardsSection += `<span class="award-badge">🏆 ${award}</span>`;
+                        });
+                        awardsSection += '</div>';
+                    }
+                    
+                    // Financing info
+                    let financingInfo = '';
+                    if (car.financing && car.financing.estimated_monthly) {
+                        financingInfo = `
+                            <div class="car-info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">Est. Monthly</div>
+                                    <div class="info-value">💰 $${car.financing.estimated_monthly}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">APR from</div>
+                                    <div class="info-value">📊 ${car.financing.starting_apr || 'N/A'}%</div>
+                                </div>
+                            </div>`;
+                    }
+                    
                     recommendationsHTML += `
                         <div class="car-recommendation">
-                            <div class="car-header">
-                                <h6 class="car-title">${car.brand} ${car.model} (${car.year})</h6>
-                                <span class="badge">Score: ${car.score}/100</span>
+                            <div class="car-image-container">
+                                <img src="${imageUrl}" alt="${car.brand} ${car.model}" class="car-image" 
+                                     onerror="this.src='https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&q=80'">
+                                <div class="image-overlay">Score: ${car.score}/100</div>
                             </div>
-                            <div class="car-details">
+                            <div class="car-content">
+                                <div class="car-header">
+                                    <h6 class="car-title">${car.brand} ${car.model} (${car.year})</h6>
+                                    <span class="car-badge">Featured</span>
+                                </div>
                                 <div class="price-range">${priceRange}</div>
                                 <div class="car-description">${car.description}</div>
+                                
                                 <div class="car-specs">
-                                    <span class="spec">⛽ ${mpgDisplay}</span>
-                                    <span class="spec">⚙️ ${features}</span>
+                                    <div class="spec">
+                                        <span class="spec-icon">⛽</span>
+                                        <span>${mpgDisplay}</span>
+                                    </div>
+                                    <div class="spec">
+                                        <span class="spec-icon">⚙️</span>
+                                        <span>${features}</span>
+                                    </div>
                                 </div>
+                                
+                                ${additionalInfo}
+                                ${financingInfo}
+                                ${awardsSection}
+                                
                                 ${car.match_reasons && car.match_reasons.length > 0 ? 
                                     `<div class="match-reasons">
                                         <small><strong>Why this matches:</strong> ${car.match_reasons.join(', ')}</small>
@@ -251,7 +318,7 @@
             
             messageDiv.innerHTML = `
                 <div class="message-content">
-                    <div class="avatar" style="background: #007bff;">🤖</div>
+                    <div class="avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🤖</div>
                     <div class="message-text">
                         ${data.message}
                         ${recommendationsHTML}

@@ -2,8 +2,9 @@ from typing import List, Dict, Any
 from car_database import CarDatabase
 
 class RecommendationEngine:
-    def __init__(self):
+    def __init__(self, external_car_service=None):
         self.car_db = CarDatabase()
+        self.external_car_service = external_car_service
         
         # Mapping user preferences to car categories
         self.category_mapping = {
@@ -29,8 +30,11 @@ class RecommendationEngine:
     def recommend_cars(self, user_analysis: Dict[str, Any]) -> List[Dict]:
         """Main recommendation function that returns scored and ranked cars"""
         
-        # Start with all cars
-        candidate_cars = self.car_db.get_all_cars()
+        # Use external service if available, otherwise fall back to static database
+        if self.external_car_service:
+            candidate_cars = self.external_car_service.get_all_cars()
+        else:
+            candidate_cars = self.car_db.get_all_cars()
         
         # Apply filters
         candidate_cars = self._filter_by_budget(candidate_cars, user_analysis)
