@@ -310,7 +310,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-For support or questions, please open an issue on GitHub or contact the development team.
+For support or questions, please open an issue on GitHub or contact me.
 
 ---
 
