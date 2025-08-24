@@ -1,5 +1,5 @@
-Prompt to genrate this project:
-"you are a car enthusiast , you have all the knowledge of the car. now you have to understand the emotion of the buyer like budget,etc and recmomned the car accordingly"
+output:
+<img width="1741" height="801" alt="image" src="https://github.com/user-attachments/assets/c689bdba-1005-4f75-b12f-cc272990d9d1" />
 
 # 🚗 LLM-Powered Car Recommendation Chat Assistant
 
