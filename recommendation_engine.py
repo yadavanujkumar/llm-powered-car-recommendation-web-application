@@ -70,7 +70,8 @@ class RecommendationEngine:
         elif budget_min and not budget_max:
             budget_max = min(300000, budget_min * 2)  # Assume max is 200% of min, cap at $300k
         
-        return self.car_db.search_by_budget(budget_min, budget_max)
+        return [car for car in cars
+                if car["price_range"]["min"] <= budget_max and car["price_range"]["max"] >= budget_min]
     
     def _filter_by_fuel_preference(self, cars: List[Dict], user_analysis: Dict) -> List[Dict]:
         """Filter cars by fuel preference"""

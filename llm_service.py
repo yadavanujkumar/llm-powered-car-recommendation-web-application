@@ -1,4 +1,4 @@
-import openai
+from openai import OpenAI
 import os
 import json
 import re
@@ -8,9 +8,10 @@ class LLMService:
     def __init__(self):
         api_key = os.getenv('OPENAI_API_KEY')
         if api_key:
-            openai.api_key = api_key
+            self.client = OpenAI(api_key=api_key)
             self.api_key_set = True
         else:
+            self.client = None
             self.api_key_set = False
             print("Warning: No OpenAI API key found. LLM features will use fallback analysis.")
     
@@ -44,7 +45,7 @@ class LLMService:
                 # Use fallback if no API key available
                 return self._fallback_analysis(user_message)
             
-            response = openai.ChatCompletion.create(
+            response = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": system_prompt},
